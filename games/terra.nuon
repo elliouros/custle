@@ -1,0 +1,66 @@
+{ # Terradle: based on terradle.com
+  fields: {
+    Type: {
+      type: single
+    }
+    Damage: {
+      type: numbered
+    }
+    Knockback: {
+      type: ordered
+      values: {
+        'None': 0
+        'Extremely Weak': 1
+        'Very Weak': 2
+        'Weak': 3
+        'Average': 4
+        'Strong': 5
+        'Very Strong': 6
+        'Extremely Strong': 7
+        'Insane': 8
+      }
+    }
+    Speed: {
+      type: ordered
+      values: {
+        'Snail': 0
+        'Extremely Slow': 1
+        'Very Slow': 2
+        'Slow': 3
+        'Average': 4
+        'Fast': 5
+        'Very Fast': 6
+        'Insanely Fast': 7
+      }
+    }
+    Rarity: {
+      type: ordered
+      values: {
+        'White': 0
+        'Blue': 1
+        'Green': 2
+        'Orange': 3
+        'Light Red': 4
+        'Pink': 5
+        'Light Purple': 6
+        'Lime': 7
+        'Yellow': 8
+        'Cyan': 9
+        'Red': 10
+      }
+    }
+    Autoswing: {
+      type: single
+    }
+    Material: {
+      type: single
+    }
+    Obtained: {
+      type: multi
+    }
+  }
+  items: [
+    [name             Type    Damage Knockback   Speed       Rarity Autoswing Material Obtained];
+    ['Solar Eruption' Melee   105    'Very Weak' 'Very Fast' Red    Yes       No       [Crafting]]
+  ]
+}

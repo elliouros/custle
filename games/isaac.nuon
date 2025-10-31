@@ -1,0 +1,29 @@
+{ # Isaacle: based on isaacle.net
+  fields: {
+    Quality: {
+      type: single
+    }
+    Type: {
+      type: single
+    }
+    Pool: {
+      type: multi
+    }
+    Description: {
+      type: multi
+    }
+    Colors: {
+      type: multi
+    }
+    Unlock: {
+      type: single
+    }
+    Release: {
+      type: single
+    }
+  }
+  items: [
+    [name Quality Type Pool Description Colors Unlock Release];
+    [Seraphim 3 Passive ['Angel Room' 'Baby Shop' 'Item Room'] [Familiar Tears] [Blue Pink White] 'Always Unlocked' Afterbirth]
+  ]
+}
