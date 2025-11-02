@@ -3,6 +3,7 @@
 def 'compare multi' [hidden: list]: list -> string {
   let input = $in
   let target = $hidden | length
+  let in_length = $input | length
   mut matches = 0
   for value in $input {
     if ($value | in $hidden) {
@@ -13,7 +14,8 @@ def 'compare multi' [hidden: list]: list -> string {
   $matches
   | if ($in <= 0) {
     ansi rb
-  } else if ($in < $target) {
+  } else if ($in < $target or $in_length != $target) {
+    #                       # ^bandaid-ish logic here? it works, though
     ansi yb
   } else {
     ansi gb
@@ -63,8 +65,10 @@ def compare [
   game: record
   hidden: record
 ]: record -> any {
-  let input = $in | reject name
+  let input = $in
+  if ($input == $hidden) {return true}
   $input
+  | reject name
   | transpose key value
   | each {|it|
     let type = $game | get ([fields $it.key type] | into cell-path)
@@ -87,14 +91,6 @@ def compare [
     | {key: $it.key val: $in}
   }
 }
-
-# def only []: list -> any {
-#   if ($in | length | $in == 1) {
-#     $in | first
-#   } else {
-#     error make {msg: 'tried to take only of non-singleton or empty list'}
-#   }
-# }
 
 def 'random choice' []: list -> any {
   let list = $in
@@ -119,8 +115,13 @@ def main [game: path] {
   loop {
     $game.items
     | input list -fd name
+    | do {let i = $in; $'($i.name):' | print; $i}
     | compare $game $hidden
+    | if ($in == true) {
+      break
+    } else { $in }
     | transpose -ird # ???
     | print
   }
+  'You win!'
 }
