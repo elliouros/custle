@@ -20,7 +20,7 @@ def 'compare multi' [hidden: list]: list -> string {
   } else {
     ansi gb
   }
-  | $'($in)($input)(ansi rst)'
+  | $'($in)($input)(ansi reset)'
 }
 
 def 'compare single' [hidden: any]: any -> string {
@@ -30,7 +30,7 @@ def 'compare single' [hidden: any]: any -> string {
   } else {
     ansi rb
   }
-  | $'($in)($input)(ansi rst)'
+  | $'($in)($input)(ansi reset)'
 }
 
 def 'compare ordered' [
@@ -42,22 +42,22 @@ def 'compare ordered' [
   let hidden_index = $game | get ([fields $field values $hidden] | into cell-path)
   let input_index = $game | get ([fields $field values $input] | into cell-path)
   if ($input_index > $hidden_index) {
-    $'(ansi rb)($input) \/(ansi rst)'
+    $'(ansi rb)($input) \/(ansi reset)'
   } else if ($input_index == $hidden_index) {
     $'(ansi gb)($input)'
   } else {
-    $'(ansi rb)($input) /\(ansi rst)'
+    $'(ansi rb)($input) /\(ansi reset)'
   }
 }
 
 def 'compare numbered' [hidden: number]: number -> string {
   let input = $in
   if ($input > $hidden) {
-    $'(ansi rb)($input) \/(ansi rst)'
+    $'(ansi rb)($input) \/(ansi reset)'
   } else if ($input == $hidden) {
     $'(ansi gb)($input)'
   } else {
-    $'(ansi rb)($input) /\(ansi rst)'
+    $'(ansi rb)($input) /\(ansi reset)'
   }
 }
 
@@ -109,9 +109,29 @@ def in [list] {
   }
 }
 
-def main [game: path] {
+def only []: list -> any {
+  if ($in | length | $in == 1) {
+    first
+  } else {
+    error make {msg: 'Tried to take only of non-singleton!'}
+  }
+}
+
+def main [
+  game: path
+  --item (-i): any # Specify item to use. Clears the terminal!
+] {
   let game = open $game
-  let hidden = $game.items | random choice
+  let hidden = $game.items
+    | if ($item != null) {
+      let $items = $in
+      clear
+      $items
+      | where name == $item
+      | only
+    } else {
+      random choice
+    }
   loop {
     $game.items
     | input list -fd name

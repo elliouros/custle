@@ -1,7 +1,7 @@
 # Custle
 
-Custom statistic matching games, the likes of [terradle](https://terradle.com)
-(Implemented in custle!), [Isaacle](https://isaacle.net),
+Custom statistic matching games, the likes of [Terradle](https://terradle.com)
+(Implemented in Custle!), [Isaacle](https://isaacle.net),
 [Wardle](https://wardlegame.com), and (probably) many others.
 
 To get started, play terradle with `nu custle.nu games/terra.nuon` or make your
