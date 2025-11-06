@@ -120,6 +120,7 @@ def only []: list -> any {
 def main [
   game: path
   --item (-i): any # Specify item to use. Clears the terminal!
+  --base64 (-b): any # Specify item by base64 code.
 ] {
   let game = open $game
   let hidden = $game.items
@@ -128,6 +129,9 @@ def main [
       clear
       $items
       | where name == $item
+      | only
+    } else if ($base64 != null) {
+      where name == ($base64 | decode base64 | decode)
       | only
     } else {
       random choice
