@@ -149,3 +149,29 @@ def main [
   }
   'You win!'
 }
+
+# Search a game's database by comparing with known statistics
+#
+# Queries take the form of <field><comparator><value>, in which the comparator:
+# For numbered or ordered fields is one of <=>
+# For single fields, is one of -=
+# For multi fields, is one of -*=
+#
+# Queries can be separated by semicolons ; for multiple queries in one round.
+# Malformed queries will be ignored and *will not throw errors!*
+def 'main cheat' [
+  game: path
+] {
+  let game = open $game
+  mut items = $game.items
+
+  loop {
+    let input = input
+    | split row ';'
+    | parse -r '(?<field>.+?)(?<compare>[-*=<>])(?<value>.+)$'
+    | str trim
+    | reduce -f $items {|q,acc|
+      # todo TwT
+    }
+  }
+}
