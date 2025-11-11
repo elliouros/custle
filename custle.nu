@@ -34,13 +34,13 @@ def 'compare single' [hidden: any]: any -> string {
 }
 
 def 'compare ordered' [
-  game: record
+  fields: record
   field: string
   hidden: any
 ]: any -> string {
   let input = $in
-  let hidden_index = $game | get ([fields $field values $hidden] | into cell-path)
-  let input_index = $game | get ([fields $field values $input] | into cell-path)
+  let hidden_index = $fields | get ([$field values $hidden] | into cell-path)
+  let input_index = $fields | get ([$field values $input] | into cell-path)
   if ($input_index > $hidden_index) {
     $'(ansi rb)($input) \/(ansi reset)'
   } else if ($input_index == $hidden_index) {
@@ -62,7 +62,7 @@ def 'compare numbered' [hidden: number]: number -> string {
 }
 
 def compare [
-  game: record
+  fields: record
   hidden: record
 ]: record -> any {
   let input = $in
@@ -71,7 +71,7 @@ def compare [
   | reject name
   | transpose key value
   | each {|it|
-    let type = $game | get ([fields $it.key type] | into cell-path)
+    let type = $fields | get ([$it.key type] | into cell-path)
     let hidden = $hidden | get $it.key
     $it.value
     | match $type {
@@ -79,7 +79,7 @@ def compare [
         compare numbered $hidden
       },
       'ordered' => {
-        compare ordered $game $it.key $hidden
+        compare ordered $fields $it.key $hidden
       },
       'single' => {
         compare single $hidden
@@ -140,7 +140,7 @@ def main [
     $game.items
     | input list -fd name
     | do {let i = $in; $'($i.name):' | print; $i}
-    | compare $game $hidden
+    | compare $game.fields $hidden
     | if ($in == true) {
       break
     } else { $in }
@@ -148,6 +148,29 @@ def main [
     | print
   }
   'You win!'
+}
+
+# cheats
+
+def 'resolve-ordered' [fields] {
+  let items = $in
+  $items
+  | columns
+  | reduce -f $items {|column, items|
+    if (
+      $column != name and (
+        $fields
+        | get ([$column type] | into cell-path)
+        | $in == ordered
+      )
+    ) {
+      $items
+      | update $column {|row| let value = $in
+        $fields
+        | get ([$column values $value] | into cell-path)
+      }
+    } else {$items}
+  }
 }
 
 # Search a game's database by comparing with known statistics
@@ -163,10 +186,9 @@ def 'main cheat' [
   game: path
 ] {
   let game = open $game
-  mut items = $game.items
-
-  loop {
-    let input = input
+  mut items = $game.items | resolve-ordered $game.fields
+  while ($items | length | $in > 1) {
+    $items = input
     | split row ';'
     | parse -r '(?<field>.+?)(?<compare>[-*=<>])(?<value>.+)$'
     | str trim
@@ -174,4 +196,5 @@ def 'main cheat' [
       # todo TwT
     }
   }
+  $items
 }
