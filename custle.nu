@@ -119,20 +119,25 @@ def only []: list -> any {
 
 def main [
   game: path
-  --item (-i): any # Specify item to use. Clears the terminal!
-  --base64 (-b): any # Specify item by base64 code.
+  --clear (-c) # run `clear` before playing. Good for unobfuscated item input.
+  --item (-i): any # Specify item to use.
 ] {
+  if $clear {clear}
   let game = open $game
   let hidden = $game.items
     | if ($item != null) {
       let $items = $in
-      clear
       $items
       | where name == $item
-      | only
-    } else if ($base64 != null) {
-      where name == ($base64 | decode base64 | decode)
-      | only
+      | if ($in | length | $in == 1) {
+        only
+      } else {
+        $items
+        | insert hash {|row| $row.name | hash sha256}
+        | where hash =~ $'^($item)'
+        | reject hash
+        | only
+      }
     } else {
       random choice
     }
